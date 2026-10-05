@@ -27,7 +27,7 @@ from src.lcus2.ports import resolve_port
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parse_args(argv)
     try:
-        path = resolve_port(args.path)
+        path = resolve_port(args.path, baud=args.baud)
     except Lcus2Error as exc:
         print(exc, file=sys.stderr)
         return 1
@@ -68,7 +68,7 @@ def _parse_args(argv: Sequence[str] | None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--path",
-        help="Serial device. When omitted, use the only attached CH340.",
+        help="Serial device. When omitted, use the only CH340, or the one that answers a status query.",
     )
     parser.add_argument(
         "--channel",

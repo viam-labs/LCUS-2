@@ -59,7 +59,7 @@ class Lcus2Relay(Switch, EasyResource):
 
     def reconfigure(self, config: ComponentConfig, dependencies: Mapping[ResourceName, ResourceBase]) -> None:
         parsed = parse_config(config)
-        path = resolve_port(parsed.serial_path)
+        path = resolve_port(parsed.serial_path, baud=parsed.baud_rate)
         bus = get_bus(path, parsed.baud_rate)
         old = self._bus
         self._bus = bus

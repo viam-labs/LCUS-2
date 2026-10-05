@@ -14,7 +14,7 @@ Add one switch per channel. Both switches share a single open serial port.
 | Attribute | Required | Description |
 | --- | --- | --- |
 | `channel` | yes | `1` or `2`. |
-| `serial_path` | no | Device node. When omitted, the module uses the only attached CH340. |
+| `serial_path` | no | Device node. When omitted, the module uses the only attached CH340. If several are attached, it uses the one that answers an LCUS-2 status query. |
 | `baud_rate` | no | Defaults to `9600`. |
 
 Find the node with `ls /dev/cu.wchusbserial* /dev/cu.usbserial*` on macOS, or `ls /dev/ttyUSB*` on Linux. On macOS, open the `cu` device. If the board does not appear, install the WCH CH340 driver. On Linux, the `ch341` kernel module is usually enough; if open fails with a permission error, add your user to `dialout` and log in again (`sudo usermod -aG dialout $USER`).
@@ -53,7 +53,7 @@ Find the node with `ls /dev/cu.wchusbserial* /dev/cu.usbserial*` on macOS, or `l
 }
 ```
 
-Use the same `serial_path` string for both components, or omit it on both when only one CH340 is plugged in. A registry install uses module id `viam-labs:lcus-2` in place of `executable_path`.
+Use the same `serial_path` string for both components, or omit it on both when only one CH340 is plugged in. On Linux, omitting it also works when other CH340 devices are present, as long as one of them answers an LCUS-2 status query. A registry install uses module id `viam-labs:lcus-2` in place of `executable_path`.
 
 ```python
 relay = Switch.from_robot(machine, "relay-1")
@@ -87,7 +87,7 @@ make test
 ./build.sh   # writes dist/archive.tar.gz
 ```
 
-`./device.sh` finds the only CH340 and holds each channel on for 1 second. `./device.sh 5` holds each for 5 seconds. `./device.sh 2 4` holds channel 1 for 2 seconds and channel 2 for 4. `./device.sh --status` only reads. Pass `--path` or `--channel` when more than one board or coil is attached.
+`./device.sh` finds the LCUS-2 and holds each channel on for 1 second. `./device.sh 5` holds each for 5 seconds. `./device.sh 2 4` holds channel 1 for 2 seconds and channel 2 for 4. `./device.sh --status` only reads. Pass `--path` or `--channel` when more than one board or coil is attached.
 
 On macOS, Apple's CH340 driver often leaves the board silent after the process that opened the port exits. Unplug the board and plug it back in. The module keeps the port open while `viam-server` is running, so this shows up when that process exits and when `./device.sh` is run again. The Linux `ch341` driver keeps working across open and close.
 
