@@ -1,0 +1,23 @@
+{
+  "$schema": "https://dl.viam.dev/module.schema.json",
+  "module_id": "viam-labs:lcus-2",
+  "visibility": "public",
+  "url": "https://github.com/viam-labs/LCUS-2",
+  "description": "USB serial driver for the LCUS-2 two-channel relay.",
+  "markdown_link": "README.md",
+  "entrypoint": "run.sh",
+  "first_run": "setup.sh",
+  "models": [
+    {
+      "api": "rdk:component:switch",
+      "model": "viam-labs:lcus-2:relay",
+      "markdown_link": "README.md#configuration",
+      "description": "One channel of an LCUS-2 USB relay. Add one switch per coil."
+    }
+  ],
+  "build": {
+    "build": "./build.sh",
+    "path": "dist/archive.tar.gz",
+    "arch": ["linux/amd64", "linux/arm64", "darwin/arm64"]
+  }
+}
