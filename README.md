@@ -83,8 +83,13 @@ Point a machine at `run.sh` as a local module. `viam-server` passes its socket p
 
 ```sh
 make test
+./device.sh  # hold each channel on for 1 second, then turn it off
 ./build.sh   # writes dist/archive.tar.gz
 ```
+
+`./device.sh` finds the only CH340 and holds each channel on for 1 second. `./device.sh 5` holds each for 5 seconds. `./device.sh 2 4` holds channel 1 for 2 seconds and channel 2 for 4. `./device.sh --status` only reads. Pass `--path` or `--channel` when more than one board or coil is attached.
+
+On macOS, Apple's CH340 driver often leaves the board silent after the process that opened the port exits. Unplug the board and plug it back in. The module keeps the port open while `viam-server` is running, so this shows up when that process exits and when `./device.sh` is run again. The Linux `ch341` driver keeps working across open and close.
 
 Running from this repo works on Intel and Apple Silicon Macs and on Linux. Registry builds are published for `linux/amd64`, `linux/arm64`, and `darwin/arm64`.
 
