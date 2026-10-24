@@ -1,5 +1,5 @@
-from src.lcus2.protocol import OP_OFF, OP_ON, frame
 from scripts.device import main
+from src.lcus2.protocol import OP_OFF, OP_ON, frame
 from tests.fake_serial import FakeSerial
 
 
