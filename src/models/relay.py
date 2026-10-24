@@ -53,11 +53,15 @@ class Lcus2Relay(Switch, EasyResource):
         return relay
 
     @classmethod
-    def validate_config(cls, config: ComponentConfig) -> tuple[Sequence[str], Sequence[str]]:
+    def validate_config(
+        cls, config: ComponentConfig
+    ) -> tuple[Sequence[str], Sequence[str]]:
         parse_config(config)
         return [], []
 
-    def reconfigure(self, config: ComponentConfig, dependencies: Mapping[ResourceName, ResourceBase]) -> None:
+    def reconfigure(
+        self, config: ComponentConfig, dependencies: Mapping[ResourceName, ResourceBase]
+    ) -> None:
         parsed = parse_config(config)
         path = resolve_port(parsed.serial_path, baud=parsed.baud_rate)
         bus = get_bus(path, parsed.baud_rate)
@@ -72,7 +76,13 @@ class Lcus2Relay(Switch, EasyResource):
             "LCUS-2 channel %s on %s at %s baud", self._channel, self._path, self._baud
         )
 
-    async def get_position(self, *, extra: Mapping[str, Any] | None = None, timeout: float | None = None, **kwargs) -> int:
+    async def get_position(
+        self,
+        *,
+        extra: Mapping[str, Any] | None = None,
+        timeout: float | None = None,
+        **kwargs,
+    ) -> int:
         states = await self._require_bus().read_states(required=self._channel)
         return 1 if states[self._channel] else 0
 
@@ -89,11 +99,17 @@ class Lcus2Relay(Switch, EasyResource):
         await self._require_bus().set_on(self._channel, position == 1)
 
     async def get_number_of_positions(
-        self, *, extra: Mapping[str, Any] | None = None, timeout: float | None = None, **kwargs
+        self,
+        *,
+        extra: Mapping[str, Any] | None = None,
+        timeout: float | None = None,
+        **kwargs,
     ) -> tuple[int, Sequence[str]]:
         return len(POSITIONS), POSITIONS
 
-    async def get_status(self, *, timeout: float | None = None, **kwargs) -> Mapping[str, Any]:
+    async def get_status(
+        self, *, timeout: float | None = None, **kwargs
+    ) -> Mapping[str, Any]:
         states = await self._require_bus().read_states(required=self._channel)
         return _status(self._channel, self._path, self._baud, states)
 
@@ -139,7 +155,9 @@ def parse_config(config: ComponentConfig) -> RelayConfig:
         channel = int(channel_raw)
     except (TypeError, ValueError):
         raise ValidationError("channel must be 1 or 2") from None
-    if channel not in (1, 2) or (isinstance(channel_raw, float) and channel_raw != channel):
+    if channel not in (1, 2) or (
+        isinstance(channel_raw, float) and channel_raw != channel
+    ):
         raise ValidationError("channel must be 1 or 2")
 
     path_raw = _attribute(config, "serial_path")
@@ -210,12 +228,16 @@ def _as_bool(value: Any) -> bool:
     return bool(value)
 
 
-def _status(channel: int, path: str, baud: int, states: dict[int, bool]) -> dict[str, Any]:
+def _status(
+    channel: int, path: str, baud: int, states: dict[int, bool]
+) -> dict[str, Any]:
     payload: dict[str, Any] = {
         "serial_path": path,
         "baud_rate": baud,
         "channel": channel,
-        "channels": {str(number): energized for number, energized in sorted(states.items())},
+        "channels": {
+            str(number): energized for number, energized in sorted(states.items())
+        },
     }
     on = states.get(channel)
     if on is not None:

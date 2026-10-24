@@ -136,7 +136,9 @@ async def _exercise(
         except Lcus2Error:
             await bus.set_on(channel, False)
             raise
-        print(f"channel {channel} on for {_format_seconds(seconds)}s  {_format_states(states)}")
+        print(
+            f"channel {channel} on for {_format_seconds(seconds)}s  {_format_states(states)}"
+        )
         await asyncio.sleep(seconds)
         await bus.set_on(channel, False)
         print(f"channel {channel} off {_format_states(await _confirmed(bus))}")

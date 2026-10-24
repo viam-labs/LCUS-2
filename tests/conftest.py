@@ -8,7 +8,9 @@ from tests.fake_serial import FakeSerial
 def fake_serial_port(monkeypatch):
     FakeSerial.reset()
     reset_buses_for_tests()
-    monkeypatch.setattr("src.lcus2.bus.open_serial", lambda path, baud: FakeSerial(path, baud))
+    monkeypatch.setattr(
+        "src.lcus2.bus.open_serial", lambda path, baud: FakeSerial(path, baud)
+    )
     yield
     reset_buses_for_tests()
     FakeSerial.reset()

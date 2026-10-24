@@ -8,8 +8,12 @@ from src.lcus2.ports import SerialPort, canonical_device, is_lcus_adapter, resol
 
 def test_wch_vid_and_description_match():
     assert is_lcus_adapter(SerialPort("/dev/ttyUSB0", vid=0x1A86, pid=0x7523))
-    assert is_lcus_adapter(SerialPort("/dev/cu.wchusbserial110", description="USB Serial CH340"))
-    assert not is_lcus_adapter(SerialPort("/dev/ttyACM0", vid=0x2341, description="Arduino"))
+    assert is_lcus_adapter(
+        SerialPort("/dev/cu.wchusbserial110", description="USB Serial CH340")
+    )
+    assert not is_lcus_adapter(
+        SerialPort("/dev/ttyACM0", vid=0x2341, description="Arduino")
+    )
 
 
 def test_explicit_path_is_used_as_given():

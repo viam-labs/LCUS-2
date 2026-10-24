@@ -153,7 +153,9 @@ def _answers_status(device: str, baud: int) -> bool:
             logger.debug("close after identify failed for %s", device, exc_info=True)
 
 
-def _read_states(port, payload: bytes, parse_status, done: Callable[[dict[int, bool]], bool]) -> dict[int, bool]:
+def _read_states(
+    port, payload: bytes, parse_status, done: Callable[[dict[int, bool]], bool]
+) -> dict[int, bool]:
     try:
         port.reset_input_buffer()
     except Exception:
