@@ -103,8 +103,7 @@ def _durations(channels: Sequence[int], seconds: Sequence[float]) -> tuple[float
         return tuple(float(seconds[0]) for _ in channels)
     if len(seconds) != len(channels):
         raise ValueError(
-            f"expected 1 duration or {len(channels)} durations for {len(channels)} channels, "
-            f"got {len(seconds)}"
+            f"expected 1 duration or {len(channels)} durations for {len(channels)} channels, got {len(seconds)}"
         )
     return tuple(float(value) for value in seconds)
 
@@ -163,10 +162,7 @@ def _format_seconds(seconds: float) -> str:
 def _format_states(states: dict[int, bool]) -> str:
     if not states:
         return "no status"
-    return " ".join(
-        f"CH{number}: {'ON' if energized else 'OFF'}"
-        for number, energized in sorted(states.items())
-    )
+    return " ".join(f"CH{number}: {'ON' if energized else 'OFF'}" for number, energized in sorted(states.items()))
 
 
 if __name__ == "__main__":

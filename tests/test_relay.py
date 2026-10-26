@@ -117,9 +117,7 @@ def test_omitted_path_uses_the_only_ch340(monkeypatch):
     )
 
     async def scenario():
-        relay = Lcus2Relay.new(
-            ComponentConfig(name="relay-1", attributes=dict_to_struct({"channel": 1})), {}
-        )
+        relay = Lcus2Relay.new(ComponentConfig(name="relay-1", attributes=dict_to_struct({"channel": 1})), {})
         try:
             assert relay._path == "/dev/cu.wchusbserial110"
         finally:

@@ -45,9 +45,7 @@ class Lcus2Relay(Switch, EasyResource):
         self._baud = DEFAULT_BAUD
 
     @classmethod
-    def new(
-        cls, config: ComponentConfig, dependencies: Mapping[ResourceName, ResourceBase]
-    ) -> Lcus2Relay:
+    def new(cls, config: ComponentConfig, dependencies: Mapping[ResourceName, ResourceBase]) -> Lcus2Relay:
         relay = super().new(config, dependencies)
         relay.reconfigure(config, dependencies)
         return relay
@@ -68,11 +66,11 @@ class Lcus2Relay(Switch, EasyResource):
         self._baud = parsed.baud_rate
         if old is not None:
             release_bus(old)
-        self.logger.info(
-            "LCUS-2 channel %s on %s at %s baud", self._channel, self._path, self._baud
-        )
+        self.logger.info("LCUS-2 channel %s on %s at %s baud", self._channel, self._path, self._baud)
 
-    async def get_position(self, *, extra: Mapping[str, Any] | None = None, timeout: float | None = None, **kwargs) -> int:
+    async def get_position(
+        self, *, extra: Mapping[str, Any] | None = None, timeout: float | None = None, **kwargs
+    ) -> int:
         states = await self._require_bus().read_states(required=self._channel)
         return 1 if states[self._channel] else 0
 

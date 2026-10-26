@@ -259,8 +259,5 @@ def _open_failure(path: str, exc: Exception) -> str:
     if "permission" in text:
         hint = " On Linux, add your user to the dialout group and log in again: sudo usermod -aG dialout $USER"
     elif "no such file" in text or "not found" in text or "failed to open" in text:
-        hint = (
-            " On macOS, look for /dev/cu.wchusbserial* or /dev/cu.usbserial*. "
-            "On Linux, look for /dev/ttyUSB*."
-        )
+        hint = " On macOS, look for /dev/cu.wchusbserial* or /dev/cu.usbserial*. On Linux, look for /dev/ttyUSB*."
     return f"Could not open LCUS-2 serial port {path}: {exc}.{hint}"
