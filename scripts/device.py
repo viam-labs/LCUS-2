@@ -103,8 +103,7 @@ def _durations(channels: Sequence[int], seconds: Sequence[float]) -> tuple[float
         return tuple(float(seconds[0]) for _ in channels)
     if len(seconds) != len(channels):
         raise ValueError(
-            f"expected 1 duration or {len(channels)} durations for {len(channels)} channels, "
-            f"got {len(seconds)}"
+            f"expected 1 duration or {len(channels)} durations for {len(channels)} channels, got {len(seconds)}"
         )
     return tuple(float(value) for value in seconds)
 
@@ -136,9 +135,7 @@ async def _exercise(
         except Lcus2Error:
             await bus.set_on(channel, False)
             raise
-        print(
-            f"channel {channel} on for {_format_seconds(seconds)}s  {_format_states(states)}"
-        )
+        print(f"channel {channel} on for {_format_seconds(seconds)}s  {_format_states(states)}")
         await asyncio.sleep(seconds)
         await bus.set_on(channel, False)
         print(f"channel {channel} off {_format_states(await _confirmed(bus))}")
@@ -165,10 +162,7 @@ def _format_seconds(seconds: float) -> str:
 def _format_states(states: dict[int, bool]) -> str:
     if not states:
         return "no status"
-    return " ".join(
-        f"CH{number}: {'ON' if energized else 'OFF'}"
-        for number, energized in sorted(states.items())
-    )
+    return " ".join(f"CH{number}: {'ON' if energized else 'OFF'}" for number, energized in sorted(states.items()))
 
 
 if __name__ == "__main__":

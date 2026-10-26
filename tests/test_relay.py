@@ -14,18 +14,14 @@ from tests.fake_serial import FakeSerial
 def _config(channel, **attributes):
     attributes.setdefault("serial_path", "/dev/fake-lcus")
     attributes["channel"] = channel
-    return ComponentConfig(
-        name=f"relay-{channel}", attributes=dict_to_struct(attributes)
-    )
+    return ComponentConfig(name=f"relay-{channel}", attributes=dict_to_struct(attributes))
 
 
 def test_validate_requires_channel_1_or_2():
     with pytest.raises(ValidationError):
         parse_config(_config(3))
     with pytest.raises(ValidationError):
-        Lcus2Relay.validate_config(
-            ComponentConfig(name="relay", attributes=dict_to_struct({}))
-        )
+        Lcus2Relay.validate_config(ComponentConfig(name="relay", attributes=dict_to_struct({})))
 
 
 def test_validate_accepts_string_channel_and_default_baud():
@@ -36,9 +32,7 @@ def test_validate_accepts_string_channel_and_default_baud():
     parsed = parse_config(
         ComponentConfig(
             name="relay-1",
-            attributes=dict_to_struct(
-                {"channel": "1", "baud_rate": 9600, "serial_path": "/dev/ttyUSB0"}
-            ),
+            attributes=dict_to_struct({"channel": "1", "baud_rate": 9600, "serial_path": "/dev/ttyUSB0"}),
         )
     )
     assert parsed.channel == 1
@@ -103,9 +97,7 @@ def test_do_command_can_set_the_other_channel():
     async def scenario():
         relay = Lcus2Relay.new(_config(1), {})
         try:
-            result = await relay.do_command(
-                {"command": "set", "channel": 2, "on": "true"}
-            )
+            result = await relay.do_command({"command": "set", "channel": 2, "on": "true"})
             assert result == {"channel": 2, "position": 1, "on": True}
             assert frame(2, OP_ON) in FakeSerial.opened[0].writes
             assert (await relay.do_command({"command": "off"}))["position"] == 0
@@ -125,10 +117,7 @@ def test_omitted_path_uses_the_only_ch340(monkeypatch):
     )
 
     async def scenario():
-        relay = Lcus2Relay.new(
-            ComponentConfig(name="relay-1", attributes=dict_to_struct({"channel": 1})),
-            {},
-        )
+        relay = Lcus2Relay.new(ComponentConfig(name="relay-1", attributes=dict_to_struct({"channel": 1})), {})
         try:
             assert relay._path == "/dev/cu.wchusbserial110"
         finally:

@@ -27,9 +27,7 @@ _buses: dict[tuple[str, int], SerialBus] = {}
 _registry_lock = threading.Lock()
 
 
-def get_bus(
-    path: str, baud: int, *, query_timeout: float = DEFAULT_QUERY_TIMEOUT
-) -> SerialBus:
+def get_bus(path: str, baud: int, *, query_timeout: float = DEFAULT_QUERY_TIMEOUT) -> SerialBus:
     """Open ``path`` if this process does not already have it, and take a reference."""
     key = (canonical_device(path), baud)
     with _registry_lock:
@@ -69,9 +67,7 @@ def reset_buses_for_tests() -> None:
 class SerialBus:
     """Thread-safe session for one LCUS-2."""
 
-    def __init__(
-        self, path: str, baud: int, *, query_timeout: float = DEFAULT_QUERY_TIMEOUT
-    ):
+    def __init__(self, path: str, baud: int, *, query_timeout: float = DEFAULT_QUERY_TIMEOUT):
         self.path = path
         self.baud = baud
         self._query_timeout = query_timeout
@@ -129,9 +125,7 @@ class SerialBus:
             written = port.write(payload)
             port.flush()
             if written != len(payload):
-                raise Lcus2Error(
-                    f"Short write to {self.path}: sent {written} of {len(payload)} bytes"
-                )
+                raise Lcus2Error(f"Short write to {self.path}: sent {written} of {len(payload)} bytes")
             time.sleep(_COMMAND_GAP)
 
     def _read_states(self) -> dict[int, bool]:
@@ -157,9 +151,7 @@ class SerialBus:
     def _query(self) -> dict[int, bool]:
         parsed: dict[int, bool] = {}
         if self._query_mode in ("unknown", "ff"):
-            parsed = parse_status(
-                self._exchange(QUERY_ALL, lambda found: 1 in found and 2 in found)
-            )
+            parsed = parse_status(self._exchange(QUERY_ALL, lambda found: 1 in found and 2 in found))
             if 1 in parsed and 2 in parsed:
                 self._query_mode = "ff"
                 return parsed
@@ -169,9 +161,7 @@ class SerialBus:
         for channel in (1, 2):
             if channel in parsed:
                 continue
-            raw = self._exchange(
-                frame(channel, OP_QUERY), lambda found, ch=channel: ch in found
-            )
+            raw = self._exchange(frame(channel, OP_QUERY), lambda found, ch=channel: ch in found)
             for number, on in parse_status(raw).items():
                 if number == channel:
                     parsed[number] = on
@@ -179,9 +169,7 @@ class SerialBus:
             self._query_mode = "channel"
         return parsed
 
-    def _exchange(
-        self, payload: bytes, done: Callable[[dict[int, bool]], bool]
-    ) -> bytes:
+    def _exchange(self, payload: bytes, done: Callable[[dict[int, bool]], bool]) -> bytes:
         port = self._require_port()
         try:
             port.reset_input_buffer()
@@ -191,9 +179,7 @@ class SerialBus:
         written = port.write(payload)
         port.flush()
         if written != len(payload):
-            raise Lcus2Error(
-                f"Short write to {self.path}: sent {written} of {len(payload)} bytes"
-            )
+            raise Lcus2Error(f"Short write to {self.path}: sent {written} of {len(payload)} bytes")
         return self._read_until(port, done)
 
     def _read_until(self, port, done: Callable[[dict[int, bool]], bool]) -> bytes:
@@ -264,11 +250,7 @@ def open_serial(path: str, baud: int):
 
 def _exclusive_unsupported(exc: Exception) -> bool:
     text = str(exc).lower()
-    return (
-        "exclusive" in text
-        or "inappropriate ioctl" in text
-        or "invalid argument" in text
-    )
+    return "exclusive" in text or "inappropriate ioctl" in text or "invalid argument" in text
 
 
 def _open_failure(path: str, exc: Exception) -> str:
@@ -277,8 +259,5 @@ def _open_failure(path: str, exc: Exception) -> str:
     if "permission" in text:
         hint = " On Linux, add your user to the dialout group and log in again: sudo usermod -aG dialout $USER"
     elif "no such file" in text or "not found" in text or "failed to open" in text:
-        hint = (
-            " On macOS, look for /dev/cu.wchusbserial* or /dev/cu.usbserial*. "
-            "On Linux, look for /dev/ttyUSB*."
-        )
+        hint = " On macOS, look for /dev/cu.wchusbserial* or /dev/cu.usbserial*. On Linux, look for /dev/ttyUSB*."
     return f"Could not open LCUS-2 serial port {path}: {exc}.{hint}"

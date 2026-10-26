@@ -87,9 +87,7 @@ def resolve_port(
 
     names = ", ".join(port.device for port in matches)
     if identify is None and sys.platform == "darwin":
-        raise Lcus2Error(
-            f"Multiple CH340 serial devices found ({names}). Set serial_path to the LCUS-2."
-        )
+        raise Lcus2Error(f"Multiple CH340 serial devices found ({names}). Set serial_path to the LCUS-2.")
     checker = identify or _answers_status
     answered = [port for port in matches if _checked(checker, port.device, baud)]
     if len(answered) == 1:
@@ -129,9 +127,7 @@ def _answers_status(device: str, baud: int) -> bool:
         logger.debug("could not open %s to identify it", device, exc_info=True)
         return False
     try:
-        states = _read_states(
-            port, QUERY_ALL, parse_status, lambda found: 1 in found and 2 in found
-        )
+        states = _read_states(port, QUERY_ALL, parse_status, lambda found: 1 in found and 2 in found)
         if 1 in states and 2 in states:
             return True
         for channel in (1, 2):
@@ -153,9 +149,7 @@ def _answers_status(device: str, baud: int) -> bool:
             logger.debug("close after identify failed for %s", device, exc_info=True)
 
 
-def _read_states(
-    port, payload: bytes, parse_status, done: Callable[[dict[int, bool]], bool]
-) -> dict[int, bool]:
+def _read_states(port, payload: bytes, parse_status, done: Callable[[dict[int, bool]], bool]) -> dict[int, bool]:
     try:
         port.reset_input_buffer()
     except Exception:
